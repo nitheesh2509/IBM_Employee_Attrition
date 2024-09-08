@@ -6,10 +6,6 @@ __pycache__/
 env/
 venv/
 
-# Ignore data files
-*.csv
-*.npy
-
 # Ignore models
 *.pkl
 
