@@ -37,7 +37,7 @@ def scale_features(X_train, X_test):
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
-    return X_train_scaled, X_test_scaled
+    return X_train_scaled, X_test_scaled, scaler
 
 # Apply SMOTE
 def apply_smote(X_train, y_train):
@@ -102,16 +102,6 @@ def evaluate_model(model, X_test, y_test, model_name):
 
     return accuracy
 
-# Feature Importance Visualization (for tree-based models)
-def plot_feature_importance(model, X_train, model_name):
-    importance = model.feature_importances_
-    features = pd.DataFrame({'Feature': X_train.columns, 'Importance': importance})
-    features = features.sort_values(by='Importance', ascending=False)
-    plt.figure(figsize=(8, 6))
-    sns.barplot(x='Importance', y='Feature', data=features)
-    plt.title(f'Feature Importance - {model_name}')
-    plt.show()
-
 if __name__ == "__main__":
     # Load data
     filepath = '../data/processed_data.csv'
@@ -124,17 +114,20 @@ if __name__ == "__main__":
     X_train_resampled, y_train_resampled = apply_smote(X_train, y_train)
 
     # Scale the features
-    X_train_scaled, X_test_scaled = scale_features(X_train_resampled, X_test)
+    X_train_scaled, X_test_scaled, scaler = scale_features(X_train_resampled, X_test)
 
+    # Save the scaler
+    scaler_path = '../models/scaler.pkl'
+    with open(scaler_path, 'wb') as f:
+        pickle.dump(scaler, f)
+        
     # Train and evaluate RandomForest
     rf_model = build_random_forest(X_train_scaled, y_train_resampled)
     rf_accuracy = evaluate_model(rf_model, X_test_scaled, y_test, 'RandomForest')
-    plot_feature_importance(rf_model, pd.DataFrame(X_train, columns=X_train.columns), 'RandomForest')
 
     # Train and evaluate XGBoost
     xgb_model = build_xgboost(X_train_scaled, y_train_resampled)
     xgb_accuracy = evaluate_model(xgb_model, X_test_scaled, y_test, 'XGBoost')
-    plot_feature_importance(xgb_model, pd.DataFrame(X_train, columns=X_train.columns), 'XGBoost')
 
     # Train and evaluate Logistic Regression
     lr_model = LogisticRegression(random_state=42, max_iter=200)

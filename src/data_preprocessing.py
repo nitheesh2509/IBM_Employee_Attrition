@@ -36,6 +36,7 @@ def scale_features(X_train, X_test):
     X_test_scaled = scaler.transform(X_test)
     return X_train_scaled, X_test_scaled
 
+
 if __name__ == "__main__":
     filepath = "E:/Data Science projects/New folder/IBM_Employee_Attrition/data/HR-Employee-Attrition.csv"
 
@@ -69,3 +70,4 @@ if __name__ == "__main__":
     print("Shape of X_train_scaled:", X_train_scaled.shape)
     print("Shape of X_test_scaled:", X_test_scaled.shape)
     print("Data preprocessing successful.")
+    
